@@ -30,12 +30,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             BasicStateCodelabTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    WellnessScreen()
-                }
             }
         }
     }
