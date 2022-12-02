@@ -1,7 +1,6 @@
 package com.codelab.theming.ui.start.theme
 
 import androidx.compose.material.Typography
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -16,7 +15,6 @@ private val Montserrat = FontFamily(
 )
 
 private val Domine = FontFamily(
-
     Font(R.font.domine_regular),
     Font(R.font.domine_bold, FontWeight.Bold)
 )
