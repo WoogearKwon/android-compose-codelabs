@@ -16,13 +16,10 @@
 
 package com.example.android.codelab.animation.ui.home
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -162,8 +159,13 @@ fun Home() {
     val lazyListState = rememberLazyListState()
 
     // The background color. The value is changed by the current tab.
-    // TODO 1: Animate this color change.
-    val backgroundColor = if (tabPage == TabPage.Home) Purple100 else Green300
+    val backgroundColor by animateColorAsState(
+        targetValue = if (tabPage == TabPage.Home) Purple100 else Green300,
+        animationSpec = tween(
+            durationMillis = 400,
+            easing = LinearOutSlowInEasing
+        )
+    )
 
     // The coroutine scope for event handlers calling suspend functions.
     val coroutineScope = rememberCoroutineScope()
@@ -303,7 +305,7 @@ private fun EditMessage(shown: Boolean) {
         ),
         exit = slideOutVertically(
             // Exits by sliding up from offset 0 to -fullHeight.
-            targetOffsetY = { fullHeight -> -fullHeight},
+            targetOffsetY = { fullHeight -> -fullHeight },
             animationSpec = tween(
                 durationMillis = 250,
                 easing = FastOutLinearInEasing
