@@ -16,6 +16,7 @@
 
 package com.example.compose.rally
 
+import android.accounts.Account
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,7 +31,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.compose.rally.ui.accounts.AccountsScreen
+import com.example.compose.rally.ui.bills.BillsScreen
 import com.example.compose.rally.ui.components.RallyTabRow
+import com.example.compose.rally.ui.overview.OverviewScreen
 import com.example.compose.rally.ui.theme.RallyTheme
 
 /**
@@ -55,49 +59,50 @@ fun RallyApp() {
         val currentDestination = currentBackStack?.destination
 
         // Change the variable to this and use Overview as a backup screen if this returns null
-        val currentScreen = rallyTabRowScreens.find { it.route == currentDestination?.route } ?: Overview
+        val currentScreen =
+            rallyTabRowScreens.find { it.route == currentDestination?.route } ?: Overview
 
-        Scaffold(
-            topBar = {
-                RallyTabRow(
-                    allScreens = rallyTabRowScreens,
-                    onTabSelected = { newScreen ->
-                        navController.navigateSingleTopToo(newScreen.route)
-                    },
-                    currentScreen = currentScreen
-                )
-            }
-        ) { innerPadding ->
+        Scaffold(topBar = {
+            RallyTabRow(
+                allScreens = rallyTabRowScreens, onTabSelected = { newScreen ->
+                    navController.navigateSingleTopToo(newScreen.route)
+                }, currentScreen = currentScreen
+            )
+        }) { innerPadding ->
             NavHost(
                 navController = navController,
                 startDestination = Overview.route,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(route = Overview.route) {
-                    Overview.screen()
+                    OverviewScreen(onClickSeeAllAccounts = {
+                        navController.navigateSingleTopToo(
+                            Accounts.route
+                        )
+                    },
+                        onClickSeeAllBills = { navController.navigateSingleTopToo(Bills.route) })
                 }
                 composable(route = Accounts.route) {
-                    Accounts.screen()
+                    AccountsScreen()
                 }
                 composable(route = Bills.route) {
-                    Bills.screen()
+                    BillsScreen()
                 }
             }
         }
     }
 }
 
-fun NavHostController.navigateSingleTopToo(route: String) =
-    this.navigate(route) {
-        // pop up to the start destination of the graph to avoid building up a large of destinations
-        // on the back stack as you select tabs.
-        // In Rally, this would mean that pressing the back arrow from any destination would pop the
-        // entire back stack to Overview
-        popUpTo(
-            this@navigateSingleTopToo.graph.findStartDestination().id
-        ) { saveState = true}
-        launchSingleTop = true
-        // `restore = true` determines whether this navigation action should restore any state
-        // previously saved by PopUpToBuilder.saveState or the popUpToSaveState attribute.
-        restoreState = true
-    }
+fun NavHostController.navigateSingleTopToo(route: String) = this.navigate(route) {
+    // pop up to the start destination of the graph to avoid building up a large of destinations
+    // on the back stack as you select tabs.
+    // In Rally, this would mean that pressing the back arrow from any destination would pop the
+    // entire back stack to Overview
+    popUpTo(
+        this@navigateSingleTopToo.graph.findStartDestination().id
+    ) { saveState = true }
+    launchSingleTop = true
+    // `restore = true` determines whether this navigation action should restore any state
+    // previously saved by PopUpToBuilder.saveState or the popUpToSaveState attribute.
+    restoreState = true
+}
