@@ -16,7 +16,6 @@
 
 package com.example.compose.rally
 
-import android.accounts.Account
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.rally.ui.accounts.AccountsScreen
+import com.example.compose.rally.ui.accounts.SingleAccountScreen
 import com.example.compose.rally.ui.bills.BillsScreen
 import com.example.compose.rally.ui.components.RallyTabRow
 import com.example.compose.rally.ui.overview.OverviewScreen
@@ -65,7 +65,7 @@ fun RallyApp() {
         Scaffold(topBar = {
             RallyTabRow(
                 allScreens = rallyTabRowScreens, onTabSelected = { newScreen ->
-                    navController.navigateSingleTopToo(newScreen.route)
+                    navController.navigateSingleTopTo(newScreen.route)
                 }, currentScreen = currentScreen
             )
         }) { innerPadding ->
@@ -75,31 +75,52 @@ fun RallyApp() {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(route = Overview.route) {
-                    OverviewScreen(onClickSeeAllAccounts = {
-                        navController.navigateSingleTopToo(
-                            Accounts.route
-                        )
-                    },
-                        onClickSeeAllBills = { navController.navigateSingleTopToo(Bills.route) })
+                    OverviewScreen(
+                        onClickSeeAllAccounts = {
+                            navController.navigateSingleTopTo(Accounts.route)
+                        },
+                        onClickSeeAllBills = { navController.navigateSingleTopTo(Bills.route) },
+                        onAccountClick = { accountType ->
+                            navController.navigateToSingleAccount(accountType)
+                        }
+                    )
                 }
                 composable(route = Accounts.route) {
-                    AccountsScreen()
+                    AccountsScreen(
+                        onAccountClick = { accountType ->
+                            navController.navigateToSingleAccount(accountType)
+                        }
+                    )
                 }
                 composable(route = Bills.route) {
                     BillsScreen()
+                }
+                composable(
+                    route = SingleAccount.routeWithArgs,
+                    arguments = SingleAccount.arguments
+                ) { navBackStackEntry ->
+                    // Retrieve the passed argument
+                    val accountType =
+                        navBackStackEntry.arguments?.getString(SingleAccount.accountTypeArg)
+                    // Pass accountType to SingleAccountScreen
+                    SingleAccountScreen(accountType = accountType)
                 }
             }
         }
     }
 }
 
-fun NavHostController.navigateSingleTopToo(route: String) = this.navigate(route) {
+private fun NavHostController.navigateToSingleAccount(accountType: String) {
+    this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
+}
+
+fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route) {
     // pop up to the start destination of the graph to avoid building up a large of destinations
     // on the back stack as you select tabs.
     // In Rally, this would mean that pressing the back arrow from any destination would pop the
     // entire back stack to Overview
     popUpTo(
-        this@navigateSingleTopToo.graph.findStartDestination().id
+        this@navigateSingleTopTo.graph.findStartDestination().id
     ) { saveState = true }
     launchSingleTop = true
     // `restore = true` determines whether this navigation action should restore any state
