@@ -31,9 +31,16 @@ import kotlinx.coroutines.delay
 
 private const val SplashWaitTime: Long = 2_000
 
+
 @Composable
 fun LandingScreen(modifier: Modifier = Modifier, onTimeout: () -> Unit) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        /*
+        Composables should be side-effect free. When you need to make changes to the
+        state of of the app, you should use the Effect APIs so that those side effects are
+        executed in a predictable manner.
+        */
+
         // This is always refer to the latest onTimeout function that
         // LandingScreen was recomposed with
         val currentOnTimeout by rememberUpdatedState(newValue = onTimeout)

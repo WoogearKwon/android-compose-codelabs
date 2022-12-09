@@ -52,8 +52,6 @@ class MainActivity : ComponentActivity() {
 private fun MainScreen(onExploreItemClicked: OnExploreItemClicked) {
     Surface(color = MaterialTheme.colors.primary) {
         var showLandingScreen by remember { mutableStateOf(true) }
-        // when onTimeOut() called, showLandingScreen state changes.
-        // this is side effect, because this state changes outside of composable scope
 
         if (showLandingScreen) {
             LandingScreen(onTimeout = { showLandingScreen = false})
