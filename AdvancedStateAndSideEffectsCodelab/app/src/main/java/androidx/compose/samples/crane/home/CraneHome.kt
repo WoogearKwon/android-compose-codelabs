@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.insets.statusBarsPadding
+import kotlinx.coroutines.launch
 
 typealias OnExploreItemClicked = (ExploreModel) -> Unit
 
@@ -53,12 +54,17 @@ fun CraneHome(
             CraneDrawer()
         }
     ) { padding ->
+        val scope = rememberCoroutineScope()
         CraneHomeContent(
             modifier = modifier.padding(padding),
             onExploreItemClicked = onExploreItemClicked,
-            openDrawer = {
-                // TODO Codelab: rememberCoroutineScope step - open the navigation drawer
-                // scaffoldState.drawerState.open()
+            openDrawer = { // 이 콜백 함수는 Composable 안에 있지 않기 때문에 LaunchedEffect()를 사용할 수 없음
+                // 이 방식을 LandingScreen에서 사용하더라도 동작하는 것 처럼 보이겠지만,
+                // 이 경우 코루틴이 LandingScreen이 Compose에 의해 호출될 때마다 실행되게 된다.
+                // 따라서 리소스를 낭비하기 되며 side-effect를 통제된 환경에서 실행할 수 없게된다.
+                scope.launch {
+                    scaffoldState.drawerState.open()
+                }
             }
         )
     }
