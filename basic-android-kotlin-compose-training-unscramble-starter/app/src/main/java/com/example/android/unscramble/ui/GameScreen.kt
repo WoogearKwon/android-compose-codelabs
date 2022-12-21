@@ -54,7 +54,6 @@ fun GameScreen(modifier: Modifier = Modifier) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
         GameStatus()
         GameLayout()
         Row(
