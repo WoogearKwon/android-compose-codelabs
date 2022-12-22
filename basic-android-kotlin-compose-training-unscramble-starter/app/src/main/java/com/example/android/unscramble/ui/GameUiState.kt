@@ -1,6 +1,8 @@
 package com.example.android.unscramble.ui
 
 data class GameUiState(
-    val currentScrambleWord: String = " ",
+    val currentScrambledWord: String = " ",
+    val currentWordCount: Int = 0,
+    val score: Int = 0,
     val isGuessedWordWrong: Boolean = false,
 )
